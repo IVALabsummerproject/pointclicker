@@ -20,6 +20,11 @@ find_package(catkin REQUIRED COMPONENTS
   std_srvs
   tf_conversions
   visualization_msgs
+  sensor_msgs 
+  cv_bridge 
+  roscpp 
+  std_msgs 
+  image_transport
 )
 
 find_package(Eigen REQUIRED)
@@ -91,6 +96,18 @@ target_link_libraries(
   ClickedImageClient
   ${catkin_LIBRARIES}
 )
+
+add_executable(rgbclick src/rgbclick.cpp)
+
+target_link_libraries( 
+  rgbclick
+  ${catkin_LIBRARIES}
+)
+
+
+
+
+
 
 
 

@@ -172,7 +172,7 @@ void PointCloudClicker::executeClickedPointCPCallback(const rail_agile_grasp_msg
 
   //lookup 3d point for camera image point
   const pcl::PointXYZRGB &point = fullPointCloudPtr->at(px, py);
-
+  ROS_INFO("IM here_CP 1");
   if (pcl::isFinite(point))
   {
     ROS_INFO("Initializing constrained positioning marker at point %f, %f, %f, in frame %s...", point.x, point.y, point.z, fullPointCloudPtr->header.frame_id.c_str());
@@ -191,12 +191,14 @@ void PointCloudClicker::executeClickedPointCPCallback(const rail_agile_grasp_msg
     srv.request.point = transformedPoint;
     if (!cpClient.call(srv))
     {
+      ROS_INFO("There was an error setting a new grasp area.");
       feedback.message = "There was an error setting a new grasp area.";
       clickedPointCPServer.publishFeedback(feedback);
       result.success = false;
     }
     else
     {
+	  ROS_INFO("New grasp area set.");
       feedback.message = "New grasp area set.";
       clickedPointCPServer.publishFeedback(feedback);
       result.success = true;

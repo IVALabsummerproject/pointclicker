@@ -27,7 +27,7 @@ int main(int argc, char **argv)
 
  ros::init(argc, argv,"ClickedImageClient");
  actionlib::SimpleActionClient<rail_agile_grasp_msgs::ClickImagePointAction> clicker("/point_cloud_clicker/click_image_point", true);
-
+//actionlib::SimpleActionClient<rail_agile_grasp_msgs::ClickImagePointAction> clicker("/point_cloud_clicker/click_image_point_cp", true);
   ROS_INFO("Waiting for action server to start.");
   // wait for the action server to start
   clicker.waitForServer(); //will wait for infinite time
@@ -37,8 +37,8 @@ int main(int argc, char **argv)
   rail_agile_grasp_msgs::ClickImagePointGoal goal;
   goal.x = 50;
   goal.y =100;
-  goal.imageWidth=320;
-  goal.imageHeight=240;
+  goal.imageWidth=640;
+  goal.imageHeight=480;
   clicker.sendGoal(goal);
 
   //wait for the action to return
