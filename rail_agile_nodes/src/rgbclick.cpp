@@ -6,7 +6,19 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <vector>
 
+using namespace std;
+using namespace cv;
 static const std::string OPENCV_WINDOW = "Image window";
+bool yes=false;
+void onMouse(int evt, int x, int y, int flags, void* param)
+    {
+		if(evt == CV_EVENT_LBUTTONDOWN) 
+		{
+		    vector<Point>* ptPtr = (vector<Point>*)param;
+		    ptPtr->push_back(cv::Point(x,y));
+			yes=true;
+		}
+     }
 
 class ImageConverter
 {
@@ -14,28 +26,28 @@ class ImageConverter
   image_transport::ImageTransport it_;
   image_transport::Subscriber image_sub_;
   image_transport::Publisher image_pub_;
+  vector<Point> points; 
+
 
 public:
   ImageConverter()
     : it_(nh_)
   {
-    // Subscrive to input video feed and publish output video feed
+    // Subscribe to input video feed and publish output video feed
     image_sub_ = it_.subscribe("/camera/rgb/image_raw", 1,
-      &ImageConverter::imageCb, this);
+    &ImageConverter::imageCb, this);
     image_pub_ = it_.advertise("/image_converter/output_video", 1);
-
-    cv::namedWindow(OPENCV_WINDOW);
+    namedWindow(OPENCV_WINDOW);
   }
 
   ~ImageConverter()
   {
-    cv::destroyWindow(OPENCV_WINDOW);
+   destroyWindow(OPENCV_WINDOW);
   }
-  std::vector<cv::Point> points; //declare vector containing points
+  //declare vector containing points
   void imageCb(const sensor_msgs::ImageConstPtr& msg)
   {
-    cv_bridge::CvImagePtr cv_ptr;
-    cv::Mat frame = cv::imread(cv_ptr->image);
+  cv_bridge::CvImagePtr cv_ptr;
     try
     {
       cv_ptr = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::BGR8);
@@ -45,46 +57,33 @@ public:
       ROS_ERROR("cv_bridge exception: %s", e.what());
       return;
     }
-   }
-
-    void onMouse(int evt, int x, int y, int flags, void* param)
-    {
-		if(evt == CV_EVENT_LBUTTONDOWN) 
-		{
-		    std::vector<cv::Point>* ptPtr = (std::vector<cv::Point>*)param;
-		    ptPtr->push_back(cv::Point(x,y));
-		}
-     }
-
-
-
-
-	if (points.size() =1 ) //we have 2 points
+    imshow(OPENCV_WINDOW,cv_ptr->image);
+    setMouseCallback(OPENCV_WINDOW,onMouse,(void*)&points);
+    
+    waitKey(3);
+    image_pub_.publish(cv_ptr->toImageMsg());
+    if (points.empty()!=1 && yes==true) //we have 2 points
 	{
-	    for (auto it = points.begin(); it != points.end(); ++it)
+	    for (vector<Point>::iterator it = points.begin(); it != points.end(); ++it)
 	    {
 
 	        cout<<"X and Y coordinates are given below"<<endl;
-	        cout<<(*it).x<<'\t'<<(*it).y<<endl; 
+	        cout<<(*it).x<<'\t'<<(*it).y<<endl;
+			
 	    }
-	    //draw points
-	}
+		yes=false;
+    }
+   }
+
  
 
-    // Update GUI Window
-    cv::setMouseCallback(OPENCV_WINDOW,onMouse,(void*)&points);
-    cv::imshow(OPENCV_WINDOW, frame);
-    cv::waitKey(3);
-
     // Output modified video stream
-    image_pub_.publish(cv_ptr->toImageMsg());
-  }
+
+	
+
+	
+  
 };
-
-
-
-
-
 
 int main(int argc, char** argv)
 {
@@ -93,5 +92,3 @@ int main(int argc, char** argv)
   ros::spin();
   return 0;
 }
-
-
