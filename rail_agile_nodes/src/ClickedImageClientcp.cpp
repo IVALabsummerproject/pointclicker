@@ -30,11 +30,19 @@
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 
+#include <ros/ros.h>
+#include <image_transport/image_transport.h>
+#include <cv_bridge/cv_bridge.h>
+#include <sensor_msgs/image_encodings.h>
+#include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <vector>
+#include <std_msgs/Int64.h>
+
 using namespace std;
 using namespace cv;
 static const std::string OPENCV_WINDOW = "Image window";
 bool yes=false;
-vector<Point>::iterator it;
 void onMouse(int evt, int x, int y, int flags, void* param)
     {
 		if(evt == CV_EVENT_LBUTTONDOWN) 
@@ -52,6 +60,7 @@ class ImageConverter
   image_transport::Subscriber image_sub_;
   image_transport::Publisher image_pub_;
   vector<Point> points; 
+  vector<Point>::iterator it;
 
 
 public:
@@ -61,7 +70,7 @@ public:
     // Subscribe to input video feed and publish output video feed
     image_sub_ = it_.subscribe("/camera/rgb/image_raw", 1,
     &ImageConverter::imageCb, this);
-    image_pub_ = it_.advertise("/ClickedImageClient/output_video", 1);
+    image_pub_ = it_.advertise("/image_converter/output_video", 1);
     namedWindow(OPENCV_WINDOW);
   }
 
@@ -84,25 +93,17 @@ public:
     }
     imshow(OPENCV_WINDOW,cv_ptr->image);
     setMouseCallback(OPENCV_WINDOW,onMouse,(void*)&points);
-   
+    
     waitKey(3);
     image_pub_.publish(cv_ptr->toImageMsg());
-    if (points.empty()!=1 && yes==true) //we have 2 points
+    if (points.empty()!=1 && yes==true)
 	{
-	    for ( it = points.begin(); it != points.end(); ++it)
+	    for (vector<Point>::iterator it = points.begin(); it != points.end(); ++it)
 	    {
 
-	        cout<<"X and Y coordinates are given below"<<endl;
-	        cout<<(*it).x<<'\t'<<(*it).y<<endl;
-			ros::Duration(1).sleep();
-		}
-		yes=false;
-	}
-    
-///////////////////////////
-		
-  actionlib::SimpleActionClient<rail_agile_grasp_msgs::ClickImagePointAction> clicker("/point_cloud_clicker/click_image_point", true);
-
+  cout<<"X and Y coordinates are given below"<<endl;
+  cout<<(*it).x<<'\t'<<(*it).y<<endl;
+  actionlib::SimpleActionClient<rail_agile_grasp_msgs::ClickImagePointAction> clicker("/point_cloud_clicker/click_image_point_cp", true);
   ROS_INFO("Waiting for action server to start.");
   // wait for the action server to start
   clicker.waitForServer(); //will wait for infinite time
@@ -125,16 +126,18 @@ public:
     ROS_INFO("Action finished: %s",state.toString().c_str());
   }
   else
-    ROS_INFO("Action did not finish before the time out.");
-//////////////////////////////
-     
- }
+    ROS_INFO("Action did not finish before the time out.");	
+	   }
+		yes=false;
+    }
+   }
 
+  
 };
 
 int main(int argc, char** argv)
 {
-  ros::init(argc, argv, "ClickedImageClient");
+  ros::init(argc, argv, "image_converter");
   ImageConverter ic;
   ros::spin();
   return 0;

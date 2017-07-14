@@ -96,6 +96,14 @@ target_link_libraries(
   ClickedImageClient
   ${catkin_LIBRARIES}
 )
+add_executable(ClickedImageClientcp src/ClickedImageClientcp.cpp)
+
+add_dependencies(ClickedImageClientcp rail_agile_grasp_msgs_gencpp
+)
+target_link_libraries( 
+  ClickedImageClientcp
+  ${catkin_LIBRARIES}
+)
 
 add_executable(rgbclick src/rgbclick.cpp)
 
@@ -103,10 +111,6 @@ target_link_libraries(
   rgbclick
   ${catkin_LIBRARIES}
 )
-
-
-
-
 
 
 

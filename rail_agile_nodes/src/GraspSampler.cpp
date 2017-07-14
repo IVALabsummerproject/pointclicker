@@ -19,7 +19,6 @@ GraspSampler::GraspSampler() : pnh("~")
 
   cloudSubscriber = n.subscribe(cloudTopic, 1, &GraspSampler::cloudCallback, this);
   graspSubscriber = n.subscribe("find_grasps/grasps_with_workspace", 1, &GraspSampler::graspsCallback, this);
-  //graspSubscriber = n.subscribe("find_grasps/grasps", 1, &GraspSampler::graspsCallback, this);
   graspsPublisher = pnh.advertise<geometry_msgs::PoseArray>("sampled_grasps", 1);
   debugPublisher = pnh.advertise<geometry_msgs::PoseStamped>("debug", 1);
 

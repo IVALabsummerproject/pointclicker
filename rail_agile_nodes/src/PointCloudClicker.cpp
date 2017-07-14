@@ -91,7 +91,7 @@ ROS_INFO("%d is the point cloud image height",fullPointCloudPtr->height);
 
   //lookup 3d point for camera image point
   const pcl::PointXYZRGB &point = fullPointCloudPtr->at(px, py);
-  ROS_INFO("IM here 2");
+
   if (pcl::isFinite(point))
   {
     ROS_INFO("Calculating possible grasps for point %f, %f, %f, in frame %s...", point.x, point.y, point.z, fullPointCloudPtr->header.frame_id.c_str());
@@ -112,14 +112,14 @@ ROS_INFO("%d is the point cloud image height",fullPointCloudPtr->height);
 
     if (!acFindGrasps.getResult()->success)
     {
-ROS_INFO("IM here 3");
+ROS_INFO("Couldn't find any grasps, please try another point.");
       feedback.message = "Couldn't find any grasps, please try another point.";
       clickedPointServer.publishFeedback(feedback);
       result.success = false;
     }
     else
     {
-ROS_INFO("IM here 4");
+ROS_INFO("Grasps calculated successfully.");
       feedback.message = "Grasps calculated successfully.";
       clickedPointServer.publishFeedback(feedback);
       result.success = true;
@@ -127,7 +127,7 @@ ROS_INFO("IM here 4");
   }
   else
   {
-    ROS_INFO("IM here 5");
+    ROS_INFO("There was an error reading the clicked point. Please try again.");
     feedback.message = "There was an error reading the clicked point. Please try again.";
     clickedPointServer.publishFeedback(feedback);
     result.success = false;
@@ -172,7 +172,7 @@ void PointCloudClicker::executeClickedPointCPCallback(const rail_agile_grasp_msg
 
   //lookup 3d point for camera image point
   const pcl::PointXYZRGB &point = fullPointCloudPtr->at(px, py);
-  ROS_INFO("IM here_CP 1");
+ 
   if (pcl::isFinite(point))
   {
     ROS_INFO("Initializing constrained positioning marker at point %f, %f, %f, in frame %s...", point.x, point.y, point.z, fullPointCloudPtr->header.frame_id.c_str());

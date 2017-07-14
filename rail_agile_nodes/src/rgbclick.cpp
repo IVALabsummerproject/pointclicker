@@ -5,6 +5,7 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <vector>
+#include <std_msgs/Int64.h>
 
 using namespace std;
 using namespace cv;
@@ -69,19 +70,11 @@ public:
 
 	        cout<<"X and Y coordinates are given below"<<endl;
 	        cout<<(*it).x<<'\t'<<(*it).y<<endl;
-			
 	    }
 		yes=false;
     }
    }
 
- 
-
-    // Output modified video stream
-
-	
-
-	
   
 };
 
