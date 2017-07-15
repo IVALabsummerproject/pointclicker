@@ -110,8 +110,18 @@ catkin_make
 ## Startup
 The `rail_agile_nodes` package contains two launch files that will bring up the main functionality of the package.  `find_grasps.launch` will run the base AGILE code and the `grasp_sampler` node for sampling and ranking the AGILE hypotheses by heuristics.  It is run as follows:
 ```bash
+roslaunch rviz rviz
+roslaunch freenect_launch freenect.launch
 roslaunch rail_agile_nodes find_grasps.launch
+rosrun rail_agile_nodes point_cloud_clicker
+rosrun rail_agile_nodes ClickedImageClient.cpp
+rolaunch remote_manipulation_markers point_and_click.launch
 ```
+## Cycle Grasps Service
+```bash
+rosservice call /point_and_click/cycle_grasps true
+```
+* Go away 
 
 `two_cameras.launch` will run the same thing, but will launch two depth cameras and add the intermediate step of point cloud interleaving.
 ```bash
